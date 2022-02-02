@@ -35,9 +35,9 @@ contract FundRaiserFactory {
         manager = msg.sender;
     }
 
-    function createProjectCampaign(uint minimum, string name, string description) public payable {
+    function createProjectCampaign(uint minimum, string name, string description, string ipfs) public payable {
         require(msg.value == minimum);
-        address newCampaign = new FundRaiser(minimum, name, description, false, msg.sender);
+        address newCampaign = new FundRaiser(minimum, name, description, ipfs, false, msg.sender);
         deployedProjectCampaigns.push(newCampaign);
 
         Report memory newReport = Report({
@@ -50,9 +50,9 @@ contract FundRaiserFactory {
         report.push(newReport);
     }
 
-    function createNGOCampaign(uint minimum, string name, string description) public payable {
+    function createNGOCampaign(uint minimum, string name, string description, string ipfs) public payable {
         require(msg.value == minimum);
-        address newCampaign = new FundRaiser(minimum, name, description, false, msg.sender);
+        address newCampaign = new FundRaiser(minimum, name, description, ipfs, false, msg.sender);
         deployedNGOCampaigns.push(newCampaign);
 
         Report memory newReport = Report({
@@ -65,8 +65,8 @@ contract FundRaiserFactory {
         report.push(newReport);
     }
 
-    function createNPOCampaign(uint minimum, string name, string description) public payable {
-        address newCampaign = new FundRaiser(minimum, name, description, true, msg.sender);
+    function createNPOCampaign(uint minimum, string name, string description, string ipfs) public {
+        address newCampaign = new FundRaiser(minimum, name, description, ipfs, true, msg.sender);
         deployedNPOCampaigns.push(newCampaign);
     }
 
@@ -96,7 +96,7 @@ contract FundRaiserFactory {
 
     function upvoteCustomerCare(uint index) public{
         require(!cure[index].voters[msg.sender]);
-        
+
         cure[index].voters[msg.sender] = true;
         cure[index].voteCount++;
     }
@@ -172,6 +172,7 @@ contract FundRaiser {
     Request[] public requests;
     address public manager;
     string public name;
+    string public ipfsHash;
     string public description;
     uint public minimumContribution;
     mapping(address => bool) public approvers;
@@ -183,10 +184,11 @@ contract FundRaiser {
         _;
     }
 
-    function FundRaiser(uint minimum, string Name, string Description, bool isNPO, address creator) public {
+    function FundRaiser(uint minimum, string Name, string Description, string ipfs, bool isNPO, address creator) public {
         manager = creator;
         minimumContribution = minimum;
         name = Name;
+        ipfsHash = ipfs;
         description = Description;
         isNonProfit = isNPO;
     }
@@ -199,7 +201,7 @@ contract FundRaiser {
     }
 
     function createRequest(string desc, uint value, address recipient) public restricted {
-        require(this.balance > 0);
+        require(this.balance > value);
         Request memory newRequest = Request({
            description: desc,
            value: value,
@@ -242,7 +244,7 @@ contract FundRaiser {
     }
 
     function getSummary() public view returns (
-      uint, uint, uint, uint, string, string, address
+      uint, uint, uint, uint, string, string, string, address
       ) {
         return (
           minimumContribution,
@@ -251,6 +253,7 @@ contract FundRaiser {
           approversCount,
           name,
           description,
+          ipfsHash,
           manager
         );
     }
@@ -259,4 +262,3 @@ contract FundRaiser {
         return requests.length;
     }
 }
-
