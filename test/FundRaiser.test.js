@@ -18,9 +18,14 @@ beforeEach(async () => {
     .deploy({ data: compiledFactory.bytecode })
     .send({ from: accounts[0], gas: '5000000' });
 
-  await factory.methods.createProjectCampaign('1000', "College Street App", "B-2-B market place for second hand books", "hash").send({
-    from: accounts[1],
-    value: '1000',
+    await factory.methods.createP('1000', "College Street App", "B-2-B market place for second hand books", "hash").send({
+      from: accounts[1],
+      value: '1000',
+      gas: '5000000'
+    });
+
+  await factory.methods.createProjectCampaign(0).send({
+    from: accounts[0],
     gas: '5000000'
   });
 
@@ -32,7 +37,7 @@ beforeEach(async () => {
 });
 
 describe('FundRaiser', ()=>{
-  it('deploys', ()=>{
+  it('deploys with factory manager approval', ()=>{
     assert.ok(factory.options.address);
     assert.ok(fundRaiser.options.address);
   });

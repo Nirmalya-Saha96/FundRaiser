@@ -17,8 +17,19 @@ contract FundRaiserFactory {
         uint voteCount;
     }
 
+    struct AdminCheck{
+        uint adminMinimum;
+        string adminName;
+        string adminDescription;
+        string adminIpfs;
+        address adminManager;
+        bool isChecked;
+        bool isProject;
+    }
+
     CustomerCare[] public cure;
     Report[] public report;
+    AdminCheck[] public adminCheck;
     address[] public deployedProjectCampaigns;
     address[] public deployedNGOCampaigns;
     address[] public deployedNPOCampaigns;
@@ -35,34 +46,74 @@ contract FundRaiserFactory {
         manager = msg.sender;
     }
 
-    function createProjectCampaign(uint minimum, string name, string description, string ipfs) public payable {
+    function createP(uint minimum, string name, string description, string ipfs) public payable{
         require(msg.value == minimum);
-        address newCampaign = new FundRaiser(minimum, name, description, ipfs, false, msg.sender);
+
+        AdminCheck memory newAdminCheck = AdminCheck({
+            adminMinimum: minimum,
+            adminName: name,
+            adminDescription: description,
+            adminIpfs: ipfs,
+            adminManager: msg.sender,
+            isChecked: false,
+            isProject: true
+        });
+
+        adminCheck.push(newAdminCheck);
+    }
+
+    function createNGO(uint minimum, string name, string description, string ipfs) public payable{
+        require(msg.value == minimum);
+
+        AdminCheck memory newAdminCheck = AdminCheck({
+            adminMinimum: minimum,
+            adminName: name,
+            adminDescription: description,
+            adminIpfs: ipfs,
+            adminManager: msg.sender,
+            isChecked: false,
+            isProject: false
+        });
+
+        adminCheck.push(newAdminCheck);
+    }
+
+    function createProjectCampaign(uint index) public  {
+        require(msg.sender == manager);
+        require(!adminCheck[index].isChecked);
+        require(adminCheck[index].isProject);
+
+        address newCampaign = new FundRaiser(adminCheck[index].adminMinimum, adminCheck[index].adminName, adminCheck[index].adminDescription, adminCheck[index].adminIpfs, false, adminCheck[index].adminManager);
         deployedProjectCampaigns.push(newCampaign);
 
         Report memory newReport = Report({
-            managerAddress: msg.sender,
+            managerAddress: adminCheck[index].adminManager,
             campaignAddress: newCampaign,
-            campaignName: name,
+            campaignName: adminCheck[index].adminName,
             voteCount: 0
         });
 
         report.push(newReport);
+        adminCheck[index].isChecked = true;
     }
 
-    function createNGOCampaign(uint minimum, string name, string description, string ipfs) public payable {
-        require(msg.value == minimum);
-        address newCampaign = new FundRaiser(minimum, name, description, ipfs, false, msg.sender);
+    function createNGOCampaign(uint index) public  {
+        require(msg.sender == manager);
+        require(!adminCheck[index].isChecked);
+        require(!adminCheck[index].isProject);
+
+        address newCampaign = new FundRaiser(adminCheck[index].adminMinimum, adminCheck[index].adminName, adminCheck[index].adminDescription, adminCheck[index].adminIpfs, false, adminCheck[index].adminManager);
         deployedNGOCampaigns.push(newCampaign);
 
         Report memory newReport = Report({
-            managerAddress: msg.sender,
+            managerAddress: adminCheck[index].adminManager,
             campaignAddress: newCampaign,
-            campaignName: name,
+            campaignName: adminCheck[index].adminName,
             voteCount: 0
         });
 
         report.push(newReport);
+        adminCheck[index].isChecked = true;
     }
 
     function createNPOCampaign(uint minimum, string name, string description, string ipfs) public {
@@ -157,6 +208,18 @@ contract FundRaiserFactory {
     function getBalance() public view returns(uint){
         return this.balance;
     }
+
+    function getCustomerCareCount() public view returns (uint) {
+        return cure.length;
+    }
+
+    function getReportCount() public view returns (uint) {
+        return report.length;
+    }
+
+    function getAdminCheckCount() public view returns (uint) {
+        return adminCheck.length;
+    }
 }
 
 contract FundRaiser {
@@ -195,6 +258,7 @@ contract FundRaiser {
 
     function contribute() public payable {
         require(msg.value >= minimumContribution);
+        require(!approvers[msg.sender]);
 
         approvers[msg.sender] = true;
         approversCount++;

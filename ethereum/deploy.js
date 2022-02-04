@@ -4,7 +4,7 @@ const compiledFactory = require('./build/FundRaiserFactory.json');
 
 const provider = new HDWalletProvider(
   'prize verify carpet deposit game round burden cabin general boil topic world',
-  'https://rinkeby.infura.io/v3/53de4285dd664c6a9ebaeb6c4c765cc6'
+  'https://rinkeby.infura.io/v3/27d0617b4c5a4f5aa18370f47ccd3028'
 );
 const web3 = new Web3(provider);
 
@@ -21,4 +21,4 @@ const deploy = async () => {    //deployed script
   console.log('Contract deployed to', result.options.address);
 };
 deploy();
-//0x983dAc06bcd8c7453EA3c7A39cc82DCB90EF6A6B
+//0xB8d641c59F3e56db87F26ACB9E271C4564e96F80
