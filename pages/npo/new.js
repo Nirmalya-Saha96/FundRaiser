@@ -38,8 +38,9 @@ class NewNpos extends Component {
      this.setState({ loading: true, errorMessage: '' });
 
      try {
-       const created = await client.add(this.state.file);
-       const url = `https://ipfs.infura.io/ipfs/${created.path}`;
+      //  const created = await client.add(this.state.file);
+      //  const url = `https://ipfs.infura.io/ipfs/${created.path}`;
+      const url = 'https://www.drupal.org/files/project-images/idproof.png';
        this.setState({hash: url});
      } catch (error) {
        console.log(error.message);
