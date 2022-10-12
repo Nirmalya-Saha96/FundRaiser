@@ -33,9 +33,7 @@ in points 5&6 are not tampered in any kinds thus building TRUST.
 # ADDITIONAL FEATURES
 
 - Any one can raise funds of 3 types: for Project Ideas, Ngo, Personal Scholarships.
-- 
 - For Personal Funds OWNER can take money without approval of the INVESTORS
-- 
 - But Personal Funds are also not under any VOTING AND CUSTOMER CARE MECHANISM.
 
 # Site URL:
@@ -43,9 +41,6 @@ https://boring-pare-99ad4e.netlify.app/
 # View Smart Contract in:
 https://etherscan.io/address/0xE7367853D2F6D966fD309dD783e0Ca8b961b4e48
 
-# Vedio Demo
-
-https://user-images.githubusercontent.com/81407181/195400629-a9084f81-7cfe-4b1d-80e3-97bd89d006e7.mp4
 
 # TECHNOLOGIES USED:
 - Solidity
